@@ -1,16 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Windows.Forms;
 
 namespace MimicMuseAI
 {
     public partial class SettingsForm : Form
     {
+        private IniFileHelper iniFileHelper;
+        private string iniFilePath;
+        private const string sectionName = "Settings";
+
         public SettingsForm()
         {
             InitializeComponent();
+            iniFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.ini");
+            iniFileHelper = new IniFileHelper(iniFilePath);
+            LoadSettings();
         }
 
         private void InitializeComponent()
@@ -32,7 +37,7 @@ namespace MimicMuseAI
             openAPIUrl.Name = "openAPIUrl";
             openAPIUrl.Size = new Size(380, 27);
             openAPIUrl.TabIndex = 0;
-            openAPIUrl.Text = "https://api.featherless.ai/v1";
+            openAPIUrl.Leave += new EventHandler(TextBox_Leave);
             // 
             // label1
             // 
@@ -58,7 +63,7 @@ namespace MimicMuseAI
             openAPIModel.Name = "openAPIModel";
             openAPIModel.Size = new Size(380, 27);
             openAPIModel.TabIndex = 2;
-            openAPIModel.Text = "deepseek-ai/DeepSeek-R1";
+            openAPIModel.Leave += new EventHandler(TextBox_Leave);
             // 
             // label3
             // 
@@ -67,7 +72,7 @@ namespace MimicMuseAI
             label3.Name = "label3";
             label3.Size = new Size(268, 20);
             label3.TabIndex = 5;
-            label3.Text = "API key (USE ENVIRONMENT VARIABLE";
+            label3.Text = "API key (USE ENVIRONMENT VARIABLE)";
             // 
             // openAPIKey
             // 
@@ -75,7 +80,7 @@ namespace MimicMuseAI
             openAPIKey.Name = "openAPIKey";
             openAPIKey.Size = new Size(162, 27);
             openAPIKey.TabIndex = 4;
-            openAPIKey.Text = "LLM_Key";
+            openAPIKey.Leave += new EventHandler(TextBox_Leave);
             // 
             // label4
             // 
@@ -84,7 +89,7 @@ namespace MimicMuseAI
             label4.Name = "label4";
             label4.Size = new Size(169, 20);
             label4.TabIndex = 6;
-            label4.Text = "OpenAI compatable API";
+            label4.Text = "OpenAI compatible API";
             // 
             // panel1
             // 
@@ -114,8 +119,35 @@ namespace MimicMuseAI
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-
+            LoadSettings();
         }
+
+        private void LoadSettings()
+        {
+            if (!File.Exists(iniFilePath))
+            {
+                // Create the file with default settings if it doesn't exist
+                iniFileHelper.Write(sectionName, "URL", "https://api.featherless.ai/v1");
+                iniFileHelper.Write(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
+                iniFileHelper.Write(sectionName, "APIKey", "LLM_Key");
+                //MessageBox.Show("INI file created with default settings.");
+            }
+
+            // Load settings from the INI file
+            openAPIUrl.Text = iniFileHelper.Read(sectionName, "URL", "https://api.featherless.ai/v1");
+            openAPIModel.Text = iniFileHelper.Read(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
+            openAPIKey.Text = iniFileHelper.Read(sectionName, "APIKey", "LLM_Key");
+        }
+
+        private void TextBox_Leave(object sender, EventArgs e)
+        {
+            // Save the setting when the text box loses focus
+            iniFileHelper.Write(sectionName, "URL", openAPIUrl.Text);
+            iniFileHelper.Write(sectionName, "Model", openAPIModel.Text);
+            iniFileHelper.Write(sectionName, "APIKey", openAPIKey.Text);
+            //MessageBox.Show("Settings saved.");
+        }
+
         private TextBox openAPIUrl;
         private Label label1;
         private Label label2;
