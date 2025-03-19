@@ -8,12 +8,20 @@ namespace MimicMuseAI
         public Main()
         {
             InitializeComponent();
+
+            if (promptInput != null)
+            {
+                promptInput.TextChanged += new EventHandler(PromptInput_TextChanged);
+            }
+
         }
 
         private void MainScreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Logic to switch to the main screen
         }
+
+
 
         private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -25,6 +33,11 @@ namespace MimicMuseAI
         private void ButtonSubmit_Click(object sender, EventArgs e)
         {
             // Logic to handle the submit button click
+        }
+
+        private void PromptInput_TextChanged(object sender, EventArgs e)
+        {
+         //   ButtonSubmit.Text = string.IsNullOrEmpty(promptInput.Text) ? "Continue" : "Submit";
         }
     }
 }

@@ -1,20 +1,16 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace MimicMuseAI
 {
     public partial class SettingsForm : Form
     {
-        private IniFileHelper iniFileHelper;
-        private string iniFilePath;
-        private const string sectionName = "Settings";
+        private SettingsManager _settingsManager;
 
         public SettingsForm()
         {
             InitializeComponent();
-            iniFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.ini");
-            iniFileHelper = new IniFileHelper(iniFilePath);
+            _settingsManager = SettingsManager.Instance;
             LoadSettings();
         }
 
@@ -124,28 +120,25 @@ namespace MimicMuseAI
 
         private void LoadSettings()
         {
-            if (!File.Exists(iniFilePath))
-            {
-                // Create the file with default settings if it doesn't exist
-                iniFileHelper.Write(sectionName, "URL", "https://api.featherless.ai/v1");
-                iniFileHelper.Write(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
-                iniFileHelper.Write(sectionName, "APIKey", "LLM_Key");
-                //MessageBox.Show("INI file created with default settings.");
-            }
-
-            // Load settings from the INI file
-            openAPIUrl.Text = iniFileHelper.Read(sectionName, "URL", "https://api.featherless.ai/v1");
-            openAPIModel.Text = iniFileHelper.Read(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
-            openAPIKey.Text = iniFileHelper.Read(sectionName, "APIKey", "LLM_Key");
+            openAPIUrl.Text = _settingsManager.OpenAPIUrl;
+            openAPIModel.Text = _settingsManager.OpenAPIModel;
+            openAPIKey.Text = _settingsManager.OpenAPIKey;
         }
 
         private void TextBox_Leave(object sender, EventArgs e)
         {
-            // Save the setting when the text box loses focus
-            iniFileHelper.Write(sectionName, "URL", openAPIUrl.Text);
-            iniFileHelper.Write(sectionName, "Model", openAPIModel.Text);
-            iniFileHelper.Write(sectionName, "APIKey", openAPIKey.Text);
-            //MessageBox.Show("Settings saved.");
+            if (sender == openAPIUrl)
+            {
+                _settingsManager.SaveSetting("URL", openAPIUrl.Text);
+            }
+            else if (sender == openAPIModel)
+            {
+                _settingsManager.SaveSetting("Model", openAPIModel.Text);
+            }
+            else if (sender == openAPIKey)
+            {
+                _settingsManager.SaveSetting("APIKey", openAPIKey.Text);
+            }
         }
 
         private TextBox openAPIUrl;
