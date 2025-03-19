@@ -8,8 +8,8 @@ namespace MimicMuseAI
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBoxMain;
-        private System.Windows.Forms.TextBox textBoxPrompt;
+        private System.Windows.Forms.TextBox MainTextDisplay;
+        private System.Windows.Forms.TextBox promptInput;
         private System.Windows.Forms.Button buttonSubmit;
 
         private void InitializeComponent()
@@ -17,8 +17,8 @@ namespace MimicMuseAI
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
-            textBoxMain = new TextBox();
-            textBoxPrompt = new TextBox();
+            MainTextDisplay = new TextBox();
+            promptInput = new TextBox();
             buttonSubmit = new Button();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -29,7 +29,7 @@ namespace MimicMuseAI
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(800, 28);
+            menuStrip1.Size = new Size(800, 24);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -37,35 +37,35 @@ namespace MimicMuseAI
             // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(46, 24);
+            fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
             // 
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(224, 26);
+            settingsToolStripMenuItem.Size = new Size(116, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += SettingsToolStripMenuItem_Click;
             // 
-            // textBoxMain
+            // MainTextDisplay
             // 
-            textBoxMain.Dock = DockStyle.Fill;
-            textBoxMain.Location = new Point(0, 28);
-            textBoxMain.Multiline = true;
-            textBoxMain.Name = "textBoxMain";
-            textBoxMain.Size = new Size(800, 365);
-            textBoxMain.TabIndex = 1;
+            MainTextDisplay.Dock = DockStyle.Fill;
+            MainTextDisplay.Location = new Point(0, 24);
+            MainTextDisplay.Multiline = true;
+            MainTextDisplay.Name = "MainTextDisplay";
+            MainTextDisplay.Size = new Size(800, 373);
+            MainTextDisplay.TabIndex = 1;
             // 
-            // textBoxPrompt
+            // promptInput
             // 
-            textBoxPrompt.Dock = DockStyle.Bottom;
-            textBoxPrompt.Location = new Point(0, 393);
-            textBoxPrompt.Name = "textBoxPrompt";
-            textBoxPrompt.Size = new Size(800, 27);
-            textBoxPrompt.TabIndex = 2;
+            promptInput.Dock = DockStyle.Bottom;
+            promptInput.Location = new Point(0, 397);
+            promptInput.Name = "promptInput";
+            promptInput.Size = new Size(800, 23);
+            promptInput.TabIndex = 2;
             // 
             // buttonSubmit
-            // 
+            // I want this button to have the text "Submit" only when promptInput has text in it, all othr times it should say "Continue" AI!
             buttonSubmit.Dock = DockStyle.Bottom;
             buttonSubmit.Location = new Point(0, 420);
             buttonSubmit.Name = "buttonSubmit";
@@ -78,8 +78,8 @@ namespace MimicMuseAI
             // Main
             // 
             ClientSize = new Size(800, 450);
-            Controls.Add(textBoxMain);
-            Controls.Add(textBoxPrompt);
+            Controls.Add(MainTextDisplay);
+            Controls.Add(promptInput);
             Controls.Add(buttonSubmit);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
