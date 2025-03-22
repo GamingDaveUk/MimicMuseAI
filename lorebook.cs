@@ -244,5 +244,32 @@ namespace MimicMuseAI
             SaveData("default");
             base.OnFormClosing(e);
         }
+        public Dictionary<string, string> GetStoredData()
+        {
+            SaveDataToMemory();
+            return savedData;
+        }
+
+        public Dictionary<string, string> GetKeyContentPairs()
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            foreach (var (keyBox, contentBox) in keyContentPairs)
+            {
+                if (!string.IsNullOrWhiteSpace(keyBox.Text) && !string.IsNullOrWhiteSpace(contentBox.Text))
+                {
+                    foreach (var key in keyBox.Text.Split(','))
+                    {
+                        pairs[key.Trim()] = contentBox.Text;
+                    }
+                }
+            }
+            return pairs;
+        }
+
+        private void SaveDataToMemory()
+        {
+            savedData = GetKeyContentPairs();
+        }
+
     }
 }
