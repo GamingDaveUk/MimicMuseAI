@@ -20,6 +20,7 @@ namespace MimicMuseAI
             MainTextDisplay = new TextBox();
             promptInput = new TextBox();
             buttonSubmit = new Button();
+            loreBookToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -35,7 +36,7 @@ namespace MimicMuseAI
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem, loreBookToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
@@ -43,7 +44,7 @@ namespace MimicMuseAI
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(116, 22);
+            settingsToolStripMenuItem.Size = new Size(180, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += SettingsToolStripMenuItem_Click;
             // 
@@ -65,7 +66,7 @@ namespace MimicMuseAI
             promptInput.TabIndex = 2;
             // 
             // buttonSubmit
-            // I want this button to have the text "Submit" only when promptInput has text in it, all othr times it should say "Continue" AI!
+            // 
             buttonSubmit.Dock = DockStyle.Bottom;
             buttonSubmit.Location = new Point(0, 420);
             buttonSubmit.Name = "buttonSubmit";
@@ -74,6 +75,13 @@ namespace MimicMuseAI
             buttonSubmit.Text = "Submit";
             buttonSubmit.UseVisualStyleBackColor = true;
             buttonSubmit.Click += ButtonSubmit_Click;
+            // 
+            // loreBookToolStripMenuItem
+            // 
+            loreBookToolStripMenuItem.Name = "loreBookToolStripMenuItem";
+            loreBookToolStripMenuItem.Size = new Size(180, 22);
+            loreBookToolStripMenuItem.Text = "LoreBook";
+            loreBookToolStripMenuItem.Click += loreBookToolStripMenuItem_Click;
             // 
             // Main
             // 
@@ -90,5 +98,6 @@ namespace MimicMuseAI
             ResumeLayout(false);
             PerformLayout();
         }
+        private ToolStripMenuItem loreBookToolStripMenuItem;
     }
 }

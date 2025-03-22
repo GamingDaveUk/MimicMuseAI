@@ -37,7 +37,13 @@ namespace MimicMuseAI
 
         private void PromptInput_TextChanged(object sender, EventArgs e)
         {
-         //   ButtonSubmit.Text = string.IsNullOrEmpty(promptInput.Text) ? "Continue" : "Submit";
+            //   ButtonSubmit.Text = string.IsNullOrEmpty(promptInput.Text) ? "Continue" : "Submit";
+        }
+
+        private void loreBookToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //LoreBook loreBookForm = new LoreBook();
+            LoreBook.GetInstance().Show();
         }
     }
 }
