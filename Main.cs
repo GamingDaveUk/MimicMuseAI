@@ -113,8 +113,8 @@ namespace MimicMuseAI
         private int CountTokens(string text)
         {
             // Implement your token counting logic here
-            // For example, you can use a library or a custom method to count tokens
-            return text.Split(' ').Length; // Simple example, replace with actual token counting logic
+            // Tried tiktoke for counting tokens, however that caused a massive hang in the program
+            return (int)(text.Length / 4.0); //This is a roughly accurate way to count tokens apparently.... i mean its just char count diveded by 4
         }
     }
 }

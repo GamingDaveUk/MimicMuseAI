@@ -14,6 +14,9 @@ namespace MimicMuseAI
         public string OpenAPIModel { get; private set; }
         public string OpenAPIKey { get; private set; }
         public string ActualAPIKey { get; private set; }
+        public int ContextTokenLimit { get; private set; }
+        public int LoreBookBudget { get; private set; }
+        public int MaxReplyTokens { get; private set; }
 
 
         private SettingsManager()
@@ -42,12 +45,18 @@ namespace MimicMuseAI
                 _iniFileHelper.Write(sectionName, "URL", "https://api.featherless.ai/v1");
                 _iniFileHelper.Write(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
                 _iniFileHelper.Write(sectionName, "APIKey", "LLM_Key");
+                _iniFileHelper.Write(sectionName, "ContextTokenLimit", "14000");
+                _iniFileHelper.Write(sectionName, "LoreBookBudget", "20");
+                _iniFileHelper.Write(sectionName, "MaxReplyTokens", "2096");
             }
 
             // Load settings from the INI file
             OpenAPIUrl = _iniFileHelper.Read(sectionName, "URL", "https://api.featherless.ai/v1");
             OpenAPIModel = _iniFileHelper.Read(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
             OpenAPIKey = _iniFileHelper.Read(sectionName, "APIKey", "LLM_Key");
+            ContextTokenLimit = int.Parse(_iniFileHelper.Read(sectionName, "ContextTokenLimit", "14000"));
+            LoreBookBudget = int.Parse(_iniFileHelper.Read(sectionName, "LoreBookBudget", "20"));
+            MaxReplyTokens = int.Parse(_iniFileHelper.Read(sectionName, "MaxReplyTokens", "2096"));
             // Load the actual API key from the environment variable
             LoadActualAPIKey();
         }
