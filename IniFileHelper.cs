@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace MimicMuseAI
 {
@@ -18,6 +19,15 @@ namespace MimicMuseAI
         public IniFileHelper(string iniPath)
         {
             path = iniPath;
+            EnsureFileExists();
+        }
+
+        private void EnsureFileExists()
+        {
+            if (!File.Exists(path))
+            {
+                File.Create(path).Dispose();
+            }
         }
 
         public void Write(string section, string key, string value)
@@ -25,7 +35,7 @@ namespace MimicMuseAI
             long result = WritePrivateProfileString(section, key, value, path);
             if (result == 0)
             {
-                MessageBox.Show($"Failed to write to INI file: {path}");
+                MessageBox.Show($"Failed to write to INI file: {path}\nSection: {section}\nKey: {key}\nValue: {value}");
             }
         }
 
@@ -35,7 +45,7 @@ namespace MimicMuseAI
             int size = GetPrivateProfileString(section, key, defaultValue, returnValue, 255, path);
             if (size == 0)
             {
-                MessageBox.Show($"Failed to read from INI file: {path}");
+                MessageBox.Show($"Failed to read from INI file: {path}\nSection: {section}\nKey: {key}\nDefault Value: {defaultValue}");
             }
             return returnValue.ToString();
         }

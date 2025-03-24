@@ -1,13 +1,31 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace MimicMuseAI
 {
-    public partial class SettingsForm : Form
+    public partial class SettingsControl : UserControl
     {
         private SettingsManager _settingsManager;
 
-        public SettingsForm()
+        private TextBox openAPIUrl;
+        private Label label1;
+        private Label label2;
+        private TextBox openAPIModel;
+        private Label label3;
+        private TextBox openAPIKey;
+        private Panel panel1;
+        private Panel panel2;
+        private Label label5;
+        private Label label8;
+        private TextBox LoreBookbudget;
+        private Label label7;
+        private TextBox contextTokenLimit;
+        private Label label6;
+        private TextBox replyTokenLimit;
+        private Label label9;
+        private Label label4;
+
+        public SettingsControl()
         {
             InitializeComponent();
             _settingsManager = SettingsManager.Instance;
@@ -199,24 +217,17 @@ namespace MimicMuseAI
             label5.Text = "Tokens";
             label5.Click += label5_Click;
             // 
-            // SettingsForm
+            // SettingsControl
             // 
-            ClientSize = new Size(791, 489);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
-            Name = "SettingsForm";
-            Text = "Settings";
-            Load += SettingsForm_Load;
+            this.Controls.Add(panel2);
+            this.Controls.Add(panel1);
+            this.Name = "SettingsControl";
+            this.Size = new Size(791, 489);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
             ResumeLayout(false);
-        }
-
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
-            LoadSettings();
         }
 
         private void LoadSettings()
@@ -227,70 +238,46 @@ namespace MimicMuseAI
             contextTokenLimit.Text = _settingsManager.ContextTokenLimit.ToString();
             LoreBookbudget.Text = _settingsManager.LoreBookBudget.ToString();
             replyTokenLimit.Text = _settingsManager.MaxReplyTokens.ToString();
-
         }
 
         private void TextBox_Leave(object sender, EventArgs e)
         {
             if (sender == openAPIUrl)
             {
-                _settingsManager.SaveSetting("URL", openAPIUrl.Text);
+                _settingsManager.SaveSetting("OpenAPI", "Url", openAPIUrl.Text);
             }
             else if (sender == openAPIModel)
             {
-                _settingsManager.SaveSetting("Model", openAPIModel.Text);
+                _settingsManager.SaveSetting("OpenAPI", "Model", openAPIModel.Text);
             }
             else if (sender == openAPIKey)
             {
-                _settingsManager.SaveSetting("APIKey", openAPIKey.Text);
+                _settingsManager.SaveSetting("OpenAPI", "Key", openAPIKey.Text);
             }
-            else if (sender == replyTokenLimit) 
-            { 
-                _settingsManager.SaveSetting("MaxReplyTokens", replyTokenLimit.Text); 
+            else if (sender == replyTokenLimit)
+            {
+                _settingsManager.SaveSetting("Tokens", "MaxReplyTokens", replyTokenLimit.Text);
             }
-            else if (sender == contextTokenLimit) 
-            { 
-                _settingsManager.SaveSetting("ContextTokenLimit", contextTokenLimit.Text); 
+            else if (sender == contextTokenLimit)
+            {
+                _settingsManager.SaveSetting("Tokens", "ContextTokenLimit", contextTokenLimit.Text);
             }
-            else if (sender == LoreBookbudget) 
-            { 
-                _settingsManager.SaveSetting("LoreBookBudget", LoreBookbudget.Text); 
+            else if (sender == LoreBookbudget)
+            {
+                _settingsManager.SaveSetting("Tokens", "LoreBookBudget", LoreBookbudget.Text);
             }
         }
 
-        private TextBox openAPIUrl;
-        private Label label1;
-        private Label label2;
-        private TextBox openAPIModel;
-        private Label label3;
-        private TextBox openAPIKey;
-        private Panel panel1;
-        private Panel panel2;
-        private Label label5;
-        private Label label8;
-        private TextBox LoreBookbudget;
-        private Label label7;
-        private TextBox contextTokenLimit;
-        private Label label6;
-        private TextBox replyTokenLimit;
-        private Label label9;
-        private Label label4;
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void contextTokenLimit_TextChanged(object sender, EventArgs e)
+        private void replyTokenLimit_TextChanged(object sender, EventArgs e)
         {
             try
             {
-                int.Parse(contextTokenLimit.Text);
+                int.Parse(replyTokenLimit.Text);
             }
             catch (Exception)
             {
                 MessageBox.Show("Please enter a valid number");
-                contextTokenLimit.Text = "0";
+                replyTokenLimit.Text = "0";
             }
         }
 
@@ -312,17 +299,21 @@ namespace MimicMuseAI
             }
         }
 
-        private void replyTokenLimit_TextChanged(object sender, EventArgs e)
+        private void contextTokenLimit_TextChanged(object sender, EventArgs e)
         {
             try
             {
-                int.Parse(replyTokenLimit.Text);
+                int.Parse(contextTokenLimit.Text);
             }
             catch (Exception)
             {
                 MessageBox.Show("Please enter a valid number");
-                replyTokenLimit.Text = "0";
+                contextTokenLimit.Text = "0";
             }
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
         }
     }
 }

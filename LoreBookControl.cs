@@ -1,16 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Text.Json;
 using System.Windows.Forms;
 
 namespace MimicMuseAI
 {
-    public partial class LoreBook : Form
+    [Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
+
+    public partial class LoreBookControl : UserControl
     {
-        private static LoreBook _instance;
+        private static LoreBookControl _instance;
         private static Dictionary<string, string> savedData = new Dictionary<string, string>();
 
         private static readonly string lorebookFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Lorebooks");
@@ -18,17 +21,16 @@ namespace MimicMuseAI
         private List<(TextBox keyBox, TextBox contentBox)> keyContentPairs = new List<(TextBox, TextBox)>();
         private TextBox txtName;
 
-
-        public static LoreBook GetInstance()
+        public static LoreBookControl GetInstance()
         {
             if (_instance == null || _instance.IsDisposed)
             {
-                _instance = new LoreBook();
+                _instance = new LoreBookControl();
             }
             return _instance;
         }
 
-        private LoreBook()
+        public LoreBookControl()
         {
             InitializeComponent();
             SetupForm();
@@ -36,17 +38,24 @@ namespace MimicMuseAI
             LoadData(defaultFilePath);
         }
 
+        private void InitializeComponent()
+        {
+            SuspendLayout();
+            // 
+            // LoreBookControl
+            // 
+            Name = "LoreBookControl";
+            Size = new Size(1012, 543);
+            ResumeLayout(false);
+        }
+
         private void SetupForm()
         {
-            System.Windows.Forms.Label lblName = new System.Windows.Forms.Label { Text = "Name:", AutoSize = true, Top = 10, Left = 10 };
-            txtName = new TextBox { Name = "txtName", Width = 300, Top = lblName.Bottom + 5, Left = 10 }; // Assign to class-level field
+            Label lblName = new Label { Text = "Name:", AutoSize = true, Top = 10, Left = 10 };
+            txtName = new TextBox { Name = "txtName", Width = 300, Top = lblName.Bottom + 5, Left = 10 };
             this.Controls.Add(lblName);
             this.Controls.Add(txtName);
-            /*if (txtName.Text == "")
-            {
-                txtName.Text = "default";
-            }
-            */
+
             FlowLayoutPanel pairPanel = new FlowLayoutPanel
             {
                 Name = "pairPanel",
@@ -175,7 +184,6 @@ namespace MimicMuseAI
             string json = File.ReadAllText(filePath);
             Dictionary<string, JsonElement> loreBook = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-            // Use the existing txtName control
             txtName.Text = loreBook["name"].GetString();
 
             FlowLayoutPanel pairPanel = this.Controls["pairPanel"] as FlowLayoutPanel;
@@ -239,12 +247,7 @@ namespace MimicMuseAI
             }
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            SaveData("default");
-            base.OnFormClosing(e);
-        }
-        public Dictionary<string, string> GetStoredData()
+        public Dictionary<string, string> GetSavedData()
         {
             SaveDataToMemory();
             return savedData;
@@ -270,6 +273,6 @@ namespace MimicMuseAI
         {
             savedData = GetKeyContentPairs();
         }
-
     }
 }
+

@@ -1,77 +1,110 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 
 namespace MimicMuseAI
 {
     public class SettingsManager
     {
         private static SettingsManager _instance;
-        private IniFileHelper _iniFileHelper;
-        private const string iniFilePath = "settings.ini";
-        private const string sectionName = "Settings";
+        public static SettingsManager Instance => _instance ??= new SettingsManager();
 
-        public string OpenAPIUrl { get; private set; }
-        public string OpenAPIModel { get; private set; }
-        public string OpenAPIKey { get; private set; }
-        public string ActualAPIKey { get; private set; }
-        public int ContextTokenLimit { get; private set; }
-        public int LoreBookBudget { get; private set; }
-        public int MaxReplyTokens { get; private set; }
-
+        private readonly string settingsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.ini");
+        private readonly IniFileHelper iniFileHelper;
 
         private SettingsManager()
         {
-            _iniFileHelper = new IniFileHelper(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, iniFilePath));
-            LoadSettings();
+            iniFileHelper = new IniFileHelper(settingsFilePath);
+            InitializeDefaultValues();
         }
 
-        public static SettingsManager Instance
+        private void InitializeDefaultValues()
         {
-            get
+            if (!iniFileHelper.KeyExists("OpenAPI", "Url"))
             {
-                if (_instance == null)
-                {
-                    _instance = new SettingsManager();
-                }
-                return _instance;
+                OpenAPIUrl = "https://api.openai.com";
+            }
+            if (!iniFileHelper.KeyExists("OpenAPI", "Model"))
+            {
+                OpenAPIModel = "text-davinci-003";
+            }
+            if (!iniFileHelper.KeyExists("OpenAPI", "Key"))
+            {
+                OpenAPIKey = "YOUR_API_KEY";
+            }
+            if (!iniFileHelper.KeyExists("Tokens", "ContextTokenLimit"))
+            {
+                ContextTokenLimit = 14000;
+            }
+            if (!iniFileHelper.KeyExists("Tokens", "LoreBookBudget"))
+            {
+                LoreBookBudget = 20;
+            }
+            if (!iniFileHelper.KeyExists("Tokens", "MaxReplyTokens"))
+            {
+                MaxReplyTokens = 2096;
             }
         }
 
-        public void LoadSettings()
+        public string OpenAPIUrl
         {
-            if (!File.Exists(iniFilePath))
+            get => GetSetting("OpenAPI", "Url");
+            set => SaveSetting("OpenAPI", "Url", value);
+        }
+
+        public string OpenAPIModel
+        {
+            get => GetSetting("OpenAPI", "Model");
+            set => SaveSetting("OpenAPI", "Model", value);
+        }
+
+        public string OpenAPIKey
+        {
+            get => GetSetting("OpenAPI", "Key");
+            set => SaveSetting("OpenAPI", "Key", value);
+        }
+
+        public int ContextTokenLimit
+        {
+            get => int.TryParse(GetSetting("Tokens", "ContextTokenLimit"), out var value) ? value : 0;
+            set => SaveSetting("Tokens", "ContextTokenLimit", value.ToString());
+        }
+
+        public int LoreBookBudget
+        {
+            get => int.TryParse(GetSetting("Tokens", "LoreBookBudget"), out var value) ? value : 0;
+            set => SaveSetting("Tokens", "LoreBookBudget", value.ToString());
+        }
+
+        public int MaxReplyTokens
+        {
+            get => int.TryParse(GetSetting("Tokens", "MaxReplyTokens"), out var value) ? value : 0;
+            set => SaveSetting("Tokens", "MaxReplyTokens", value.ToString());
+        }
+
+        private string GetSetting(string section, string key)
+        {
+            try
             {
-                // Create the file with default settings if it doesn't exist
-                _iniFileHelper.Write(sectionName, "URL", "https://api.featherless.ai/v1");
-                _iniFileHelper.Write(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
-                _iniFileHelper.Write(sectionName, "APIKey", "LLM_Key");
-                _iniFileHelper.Write(sectionName, "ContextTokenLimit", "14000");
-                _iniFileHelper.Write(sectionName, "LoreBookBudget", "20");
-                _iniFileHelper.Write(sectionName, "MaxReplyTokens", "2096");
+                return iniFileHelper.Read(section, key);
             }
-
-            // Load settings from the INI file
-            OpenAPIUrl = _iniFileHelper.Read(sectionName, "URL", "https://api.featherless.ai/v1");
-            OpenAPIModel = _iniFileHelper.Read(sectionName, "Model", "deepseek-ai/DeepSeek-R1");
-            OpenAPIKey = _iniFileHelper.Read(sectionName, "APIKey", "LLM_Key");
-            ContextTokenLimit = int.Parse(_iniFileHelper.Read(sectionName, "ContextTokenLimit", "14000"));
-            LoreBookBudget = int.Parse(_iniFileHelper.Read(sectionName, "LoreBookBudget", "20"));
-            MaxReplyTokens = int.Parse(_iniFileHelper.Read(sectionName, "MaxReplyTokens", "2096"));
-            // Load the actual API key from the environment variable
-            LoadActualAPIKey();
-        }
-
-        public void SaveSetting(string key, string value)
-        {
-            _iniFileHelper.Write(sectionName, key, value);
-            LoadSettings(); // Reload settings to update the values
-        }
-        private void LoadActualAPIKey()
-        {
-            ActualAPIKey = Environment.GetEnvironmentVariable(OpenAPIKey);
-            if (string.IsNullOrEmpty(ActualAPIKey))
+            catch (Exception ex)
             {
-                MessageBox.Show($"Your environment variable: {OpenAPIKey} is not set. You may need to reboot after using the setx command to set it.");
+                MessageBox.Show($"Error reading setting from INI file: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        public void SaveSetting(string section, string key, string value)
+        {
+            try
+            {
+                iniFileHelper.Write(section, key, value);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving setting to INI file: {ex.Message}");
             }
         }
     }
