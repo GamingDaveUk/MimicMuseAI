@@ -1,20 +1,24 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
-using System.ComponentModel;
-using System.ComponentModel.Design;
+using System.Drawing;
+using System.Threading.Tasks;
 
 namespace MimicMuseAI
 {
-    [Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
     public partial class BookWriterControl : UserControl
     {
         private TextBox MainTextDisplay;
         private TextBox promptInput;
         private Button ButtonSubmit;
+        private FeatherlessClient _client;
 
         public BookWriterControl()
         {
             InitializeComponent();
+            _client = new FeatherlessClient(Environment.GetEnvironmentVariable("FEATHERLESS_KEY"));
+            _client.OnStreamUpdate += AppendToMainTextDisplay; // Subscribe to streaming updates
         }
 
         private void InitializeComponent()
@@ -32,6 +36,7 @@ namespace MimicMuseAI
             MainTextDisplay.Name = "MainTextDisplay";
             MainTextDisplay.Size = new Size(475, 374);
             MainTextDisplay.TabIndex = 2;
+            MainTextDisplay.ScrollBars = ScrollBars.Vertical; // Ensure scrolling
             // 
             // promptInput
             // 
@@ -40,7 +45,6 @@ namespace MimicMuseAI
             promptInput.Name = "promptInput";
             promptInput.Size = new Size(475, 23);
             promptInput.TabIndex = 1;
-            promptInput.TextChanged += PromptInput_TextChanged;
             // 
             // ButtonSubmit
             // 
@@ -63,35 +67,35 @@ namespace MimicMuseAI
             PerformLayout();
         }
 
-        private void ButtonSubmit_Click(object sender, EventArgs e)
+        private async void ButtonSubmit_Click(object sender, EventArgs e)
         {
-            // Logic to handle the submit button click
-            // Get the content of MainTextDisplay
-            string mainTextContent = GetMainTextDisplayContent();
+            // Clear previous streaming response
+            AppendToMainTextDisplay("\n---\n"); // Add a separator for clarity
 
-            // Get the content of promptInput
-            string promptInputContent = GetPromptInputContent();
+            // Get context from MainTextDisplay and promptInput
+            string context = GetMainTextDisplayContent() + " " + GetPromptInputContent();
 
-            // Combine the context
-            string context = mainTextContent + " " + promptInputContent;
-
-            // Get the lore data
+            // Fetch lore data (if applicable)
             Dictionary<string, string> loreData = LoreBookControl.GetInstance().GetSavedData();
+            string additionalLore = GetAdditionalLoreContent(context, loreData);
 
-            // Get the additional lore content
-            string additionalLoreContent = GetAdditionalLoreContent(context, loreData);
+            // Create the full prompt
+            string finalPrompt = context + "\n" + additionalLore;
 
-            // Count the tokens in each section
-            int mainTextTokens = CountTokens(mainTextContent);
-            int additionalLoreTokens = CountTokens(additionalLoreContent);
-
-            // Display or use the results as needed
-            MessageBox.Show($"Main Text Tokens: {mainTextTokens}\nAdditional Lore Tokens: {additionalLoreTokens}");
+            // Send the request to Featherless API
+            await _client.SendMessageAsync(finalPrompt);
         }
 
-        private void PromptInput_TextChanged(object sender, EventArgs e)
+        private void AppendToMainTextDisplay(string text)
         {
-            // ButtonSubmit.Text = string.IsNullOrEmpty(promptInput.Text) ? "Continue" : "Submit";
+            if (MainTextDisplay.InvokeRequired)
+            {
+                MainTextDisplay.Invoke(new Action(() => MainTextDisplay.AppendText(text)));
+            }
+            else
+            {
+                MainTextDisplay.AppendText(text);
+            }
         }
 
         private string GetMainTextDisplayContent()
@@ -110,10 +114,7 @@ namespace MimicMuseAI
 
             foreach (var entry in loreData)
             {
-                // Split the key string into separate words (handle commas and whitespace)
                 string[] keyWords = entry.Key.Split(',', StringSplitOptions.TrimEntries);
-
-                // Check if ANY of the words in the key list exist in context
                 if (keyWords.Any(keyWord => context.Contains(keyWord)))
                 {
                     additional += $"{entry.Key}:{{{entry.Value}}}\n";
@@ -121,13 +122,6 @@ namespace MimicMuseAI
             }
 
             return additional;
-        }
-
-        private int CountTokens(string text)
-        {
-            // Implement your token counting logic here
-            // For example, you can use a library or a custom method to count tokens
-            return text.Split(' ').Length; // Simple example, replace with actual token counting logic
         }
     }
 }
